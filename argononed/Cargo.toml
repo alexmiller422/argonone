@@ -1,0 +1,10 @@
+[package]
+name    = "argononed"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+futures  = "0.3.31"
+libgpiod = "0.2.2"
+system_shutdown = "4.0.1"
+tokio    = { workspace = true, features = ["full"] }

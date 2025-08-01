@@ -1,0 +1,6 @@
+[workspace]
+resolver = "3"
+members = ["argononed", "argonone-poweroff"]
+
+[workspace.dependencies]
+tokio = "1.47.1"

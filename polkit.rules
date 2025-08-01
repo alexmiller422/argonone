@@ -1,0 +1,12 @@
+/* Allow argononed.service to reboot or shutdown the system */
+polkit.addRule(function(action, subject) {
+  if ((
+    action.id == "org.freedesktop.login1.reboot" ||
+    action.id == "org.freedesktop.login1.reboot-multiple-sessions" ||
+    action.id == "org.freedesktop.login1.power-off" ||
+    action.id == "org.freedesktop.login1.power-off-multiple-sessions" 
+  ) && subject.system_unit == "argononed.service" ) {
+    return polkit.Result.YES;
+  }
+});
+

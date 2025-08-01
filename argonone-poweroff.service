@@ -1,0 +1,13 @@
+[Unit]
+Description=Argon One Power Off Service
+DefaultDependencies=no
+Before=poweroff.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+User=argonone
+ExecStart=/usr/local/bin/argonone-poweroff
+
+[Install]
+WantedBy=poweroff.target
