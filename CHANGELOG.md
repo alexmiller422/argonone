@@ -1,6 +1,9 @@
 # 1.0.1
 
+* Convert to functional streams
+
 * Enhanced logging
+
 
 # 1.0.0
 

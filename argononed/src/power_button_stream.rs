@@ -1,13 +1,12 @@
 use std::fmt::Debug;
 use std::future::{ready,Ready};
-use std::pin::Pin;
 use std::time::Duration;
 
 use futures::stream::{Stream, StreamExt};
 use libgpiod::line::EdgeKind;
 use libgpiod::request::Event;
 
-use crate::edge_stream::{EdgeStream};
+use crate::edge_stream;
 
 pub type Error = crate::edge_stream::Error;
 
@@ -44,28 +43,9 @@ fn create_converter() ->  impl FnMut(Event) -> Ready<Option<PowerButtonEvent>> {
     move |edge_event: Event| ready(convert(edge_event))
 }
 
-
-pub struct PowerButtonStream {
-    power_button_stream: Pin<Box<dyn Stream<Item = PowerButtonEvent>>>
-}
-
-impl PowerButtonStream {
-    pub fn open() -> Result<Self, Error>{
-        let edge_stream = EdgeStream::open()?;
+pub fn open() -> Result<impl Stream<Item = PowerButtonEvent>, Error>{
+    let edge_stream = edge_stream::open()?;
 
 
-        let power_button_stream = edge_stream.filter_map(create_converter());
-
-        Ok(PowerButtonStream {
-            power_button_stream: Box::pin(power_button_stream)
-        })
-    }
-}
-
-impl Stream for PowerButtonStream {
-    type Item = PowerButtonEvent;
-    
-    fn poll_next(mut self: std::pin::Pin<&mut Self>, cx: &mut std::task::Context<'_>) -> std::task::Poll<Option<Self::Item>> {
-        self.power_button_stream.poll_next_unpin(cx)
-    }
+    Ok(edge_stream.filter_map(create_converter()))
 }

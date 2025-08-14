@@ -5,7 +5,7 @@ use system_shutdown::{self, ShutdownResult};
 use tokio::select;
 use tokio::signal::unix::{signal, SignalKind};
 
-use crate::power_button_stream::{Error, PowerButtonEvent, PowerButtonStream};
+use crate::power_button_stream::{Error, PowerButtonEvent};
 
 mod edge_stream;
 mod power_button_stream;
@@ -55,7 +55,7 @@ fn setup_logging() {
 async fn main() -> Result<(), Error> {
     setup_logging();
 
-    let mut events_stream = PowerButtonStream::open()?;
+    let mut events_stream = power_button_stream::open()?;
     let mut signals = signal(SignalKind::interrupt())?;
 
     loop {
