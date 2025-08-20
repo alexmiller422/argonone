@@ -1,13 +1,15 @@
 [package]
 name    = "argononed"
-version = "1.0.0"
 edition = "2024"
+version.workspace = true
 
 [dependencies]
-env_logger              = { workspace = true }
+env_logger             = { workspace = true }
 futures                = "0.3.31"
+i2c-linux              = { workspace = true }
 libgpiod               = "0.2.2"
 log                    = { workspace = true }
 systemd-journal-logger = { workspace = true }
 system_shutdown        = "4.0.1"
 tokio                  = { workspace = true, features = ["full"] }
+tokio-stream           = "0.1.17"

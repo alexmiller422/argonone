@@ -1,3 +1,6 @@
+use std::convert::Infallible;
+
+use futures::sink::unfold;
 use futures::stream::{StreamExt};
 use log::{error, info, LevelFilter};
 use systemd_journal_logger::{connected_to_journal, JournalLog};
@@ -8,7 +11,9 @@ use tokio::signal::unix::{signal, SignalKind};
 use crate::power_button_stream::{Error, PowerButtonEvent};
 
 mod edge_stream;
+mod fan_control;
 mod power_button_stream;
+mod temperature_stream;
 
 fn reboot() -> ShutdownResult {
     info!("Reboot event received");
@@ -51,19 +56,39 @@ fn setup_logging() {
     }
 }
 
+fn power_button_pipeline() -> impl Future<Output = Result<(), Infallible>> {
+    let events_stream = power_button_stream::open().unwrap();
+    let events_sink = unfold((), |_, event| {
+        async { 
+            handle_event(event).unwrap();
+            Ok::<_, Infallible>(())
+        }
+    });
+    let events_pipeline = events_stream
+        .map(|event| Ok::<PowerButtonEvent, Infallible>(event))
+        .forward(events_sink);
+    
+    events_pipeline
+}
+
+fn temp_pipeline() -> impl Future<Output = Result<(), Infallible>> {
+    let temp_stream = temperature_stream::open();
+    let temp_pipeline = temp_stream.forward(fan_control::temp_sink());
+
+    temp_pipeline
+}
+
 #[tokio::main]
 async fn main() -> Result<(), Error> {
     setup_logging();
-
-    let mut events_stream = power_button_stream::open()?;
     let mut signals = signal(SignalKind::interrupt())?;
 
-    loop {
-        select! {
-            Some(_) = signals.recv() => { break },
-            Some(event) = events_stream.next() => {handle_event(event).unwrap();}
-        }
+    select! {
+        Some(_) = signals.recv() => { info!("Received signal. Terminating") },
+        _ = power_button_pipeline() => { error!("Power button events pipeline unexpectedly completed.") },
+        _ = temp_pipeline() => { error!("Temperature pipeline unexpected completed") }
     }
+
 
     Ok(())
 }

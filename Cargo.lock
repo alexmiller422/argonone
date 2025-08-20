@@ -78,7 +78,7 @@ dependencies = [
 
 [[package]]
 name = "argonone-poweroff"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "env_logger",
  "i2c-linux",
@@ -89,15 +89,17 @@ dependencies = [
 
 [[package]]
 name = "argononed"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
  "env_logger",
  "futures",
+ "i2c-linux",
  "libgpiod",
  "log",
  "system_shutdown",
  "systemd-journal-logger",
  "tokio",
+ "tokio-stream",
 ]
 
 [[package]]
@@ -1610,6 +1612,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.104",
+]
+
+[[package]]
+name = "tokio-stream"
+version = "0.1.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eca58d7bba4a75707817a2c44174253f9236b2d5fbd055602e9d5c07c139a047"
+dependencies = [
+ "futures-core",
+ "pin-project-lite",
+ "tokio",
 ]
 
 [[package]]

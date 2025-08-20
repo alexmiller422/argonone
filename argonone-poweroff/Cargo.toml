@@ -1,11 +1,11 @@
 [package]
 name = "argonone-poweroff"
-version = "1.0.0"
 edition = "2024"
+version.workspace = true
 
 [dependencies]
 env_logger             = { workspace = true }
-i2c-linux              = "0.1.2"
+i2c-linux              = { workspace = true }
 log                    = { workspace = true }
 systemd-journal-logger = { workspace = true }
 tokio                  = { workspace = true, features = ["full"] }
